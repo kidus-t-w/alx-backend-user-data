@@ -59,4 +59,4 @@ class RedactingFormatter(logging.Formatter):
         record.msg = filter_datum(
             self.fields, RedactingFormatter.REDACTION,
             record.getMessage(), RedactingFormatter.SEPARATOR)  # type: str
-        return super().format(record)  # type: str
+        return super(RedactingFormatter, self).format(record)  # type: str
