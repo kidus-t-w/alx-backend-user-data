@@ -57,6 +57,6 @@ class RedactingFormatter(logging.Formatter):
             str: The formatted log message.
         """
         record.msg = filter_datum(
-            self.fields, RedactingFormatter.REDACTION,
-            record.getMessage(), RedactingFormatter.SEPARATOR)  # type: str
+            self.fields, self.REDACTION,
+            record.getMessage(), self.SEPARATOR)  # type: str
         return super(RedactingFormatter, self).format(record)  # type: str
