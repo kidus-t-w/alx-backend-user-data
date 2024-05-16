@@ -7,7 +7,17 @@ from typing import List
 
 def filter_datum(fields: List[str], redaction: str,
                  message: str, separator: str) -> str:
-    """Returns the log message obfuscated"""
+    """Filter sensitive fields in the log message.
+
+    Args:
+        fields (List[str]): The list of fields to obfuscate.
+        redaction (str): The string used to replace sensitive data.
+        message (str): The log message containing the sensitive data.
+        separator (str): The separator used in the log message.
+
+    Returns:
+        str: The log message with sensitive fields obfuscated.
+    """
     for field in fields:
         message = re.sub(
             f"{field}=[^{separator}]*", f"{field}={redaction}", message)
@@ -22,12 +32,24 @@ class RedactingFormatter(logging.Formatter):
     FORMAT = "[HOLBERTON] %(name)s %(levelname)s %(asctime)-15s: %(message)s"
     SEPARATOR = ";"
 
-    def __init__(self, fields):
+    def __init__(self, fields: List[str]) -> None:
+        """Initialize the RedactingFormatter with the specified fields.
+
+        Args:
+            fields (List[str]): The list of fields to filter in log messages.
+        """
         super(RedactingFormatter, self).__init__(self.FORMAT)
         self.fields = fields
 
     def format(self, record: logging.LogRecord) -> str:
-        """Format the log record by filtering sensitive fields"""
+        """Format the log record by filtering sensitive fields
+
+        Args:
+            record (logging.LogRecord): The log record to be formatted.
+
+        Returns:
+            str: The formatted log message with sensitive fields filtered.
+        """
         # Get the original log message
         original_message = super(RedactingFormatter, self).format(record)
         # Filter the message
