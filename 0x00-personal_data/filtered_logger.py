@@ -5,6 +5,7 @@ import logging
 from typing import List
 import os
 import mysql.connector
+from mysql.connector import Error
 
 PII_FIELDS = ('name', 'email', 'phone', 'ssn', 'password')
 
@@ -83,7 +84,7 @@ def get_db():
     db_user = os.getenv('PERSONAL_DATA_DB_USER', 'root')
     db_password = os.getenv('PERSONAL_DATA_DB_PASSWORD', '')
     db_host = os.getenv('PERSONAL_DATA_DB_HOST', 'localhost')
-    db_name = os.getenv('PERSONAL_DATA_DB_NAME')
+    db_name = os.getenv('PERSONAL_DATA_DB_NAME', 'default_db_name')
 
     config = {
         'user': db_user,
