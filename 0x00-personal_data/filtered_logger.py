@@ -3,9 +3,9 @@
 import re
 import logging
 from typing import List
-from os import environ
+import os
 import mysql.connector
-from mysql.connector import Error
+from mysql.connector import Error, connection
 
 PII_FIELDS = ('name', 'email', 'phone', 'ssn', 'password')
 
@@ -48,47 +48,50 @@ class RedactingFormatter(logging.Formatter):
         return super(RedactingFormatter, self).format(record)
 
 
-def get_logger() -> logging.Logger:
+
+
+def get_db() -> connection.MySQLConnection:
     """
-    Creates and returns a logger named 'user_data' with a StreamHandler
-    and a RedactingFormatter that logs up to logging.INFO level and does not
-    propagate messages to other loggers.
+    Returns a connector to a MySQL database.
+    Uses environment variables for database credentials and configuration.
     """
-    # Create or retrieve the logger
-    logger = logging.getLogger('user_data')
+    # Fetching credentials and database name from environment variables
+    username = os.getenv('PERSONAL_DATA_DB_USERNAME', 'root')
+    password = os.getenv('PERSONAL_DATA_DB_PASSWORD', '')
+    host = os.getenv('PERSONAL_DATA_DB_HOST', 'localhost')
+    db_name = os.getenv('PERSONAL_DATA_DB_NAME')
 
-    # Set logging level to INFO
-    logger.setLevel(logging.INFO)
+    if not db_name:
+        raise ValueError("Database name must be set in the environment variable 'PERSONAL_DATA_DB_NAME'.")
 
-    # Do not propagate messages to other loggers
-    logger.propagate = False
+    # Configuration dictionary for the database connection
+    config = {
+        'user': username,
+        'password': password,
+        'host': host,
+        'database': db_name,
+        'raise_on_warnings': True
+    }
 
-    # Check if the logger already has handlers to avoid duplicate handlers
-    if not logger.hasHandlers():
-        # Create a console (stream) handler
-        console_handler = logging.StreamHandler()
-        console_handler.setLevel(logging.INFO)
+    try:
+        # Establishing the database connection
+        connection = mysql.connector.connect(**config)
+        print("Successfully connected to the database.")
+        return connection
 
-        # Create and set the RedactingFormatter for the handler
-        formatter = RedactingFormatter(
-            PII_FIELDS, '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        console_handler.setFormatter(formatter)
+    except Error as e:
+        print(f"Error connecting to MySQL database: {e}")
+        return None
 
-        # Add the handler to the logger
-        logger.addHandler(console_handler)
-
-    return logger
-
-
-def get_db() -> mysql.connector.connection.MySQLConnection:
-    """ Returns a connector to a MySQL database """
-    username = environ.get("PERSONAL_DATA_DB_USERNAME", "root")
-    password = environ.get("PERSONAL_DATA_DB_PASSWORD", "")
-    host = environ.get("PERSONAL_DATA_DB_HOST", "localhost")
-    db_name = environ.get("PERSONAL_DATA_DB_NAME")
-
-    connection = mysql.connector.connection.MySQLConnection(user=username,
-                                                     password=password,
-                                                     host=host,
-                                                     database=db_name)
-    return connection
+# Example usage
+if __name__ == "__main__":
+    conn = get_db()
+    if conn:
+        try:
+            # Here you can perform database operations using the connection
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM users")
+            for row in cursor.fetchall():
+                print(row)
+        finally:
+            conn.close()  # Ensure the connection is closed when done
