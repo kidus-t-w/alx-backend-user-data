@@ -51,6 +51,12 @@ def get_logger() -> logging.Logger:
     Creates and returns a logger named 'user_data' with a StreamHandler
     and a RedactingFormatter that logs up to logging.INFO level and does not
     propagate messages to other loggers.
+
+    Args:
+        None
+
+    Returns:
+        logging.Logger: The logger instance
     """
     # Create or retrieve the logger
     logger = logging.getLogger('user_data')
