@@ -3,7 +3,7 @@
 import re
 import logging
 from typing import List
-import os
+from os import environ
 import mysql.connector
 from mysql.connector import Error
 
@@ -80,19 +80,15 @@ def get_logger() -> logging.Logger:
     return logger
 
 
-def get_db():
+def get_db() -> mysql.connector.connection.MySQLConnection:
     """ Returns a connector to a MySQL database """
-    db_user = os.getenv('PERSONAL_DATA_DB_USER', 'root')
-    db_password = os.getenv('PERSONAL_DATA_DB_PASSWORD', '')
-    db_host = os.getenv('PERSONAL_DATA_DB_HOST', 'localhost')
-    db_name = os.getenv('PERSONAL_DATA_DB_NAME', 'default_db_name')
+    username = environ.get("PERSONAL_DATA_DB_USERNAME", "root")
+    password = environ.get("PERSONAL_DATA_DB_PASSWORD", "")
+    host = environ.get("PERSONAL_DATA_DB_HOST", "localhost")
+    db_name = environ.get("PERSONAL_DATA_DB_NAME")
 
-    config = {
-        'user': db_user,
-        'password': db_password,
-        'host': db_host,
-        'database': db_name,
-        'raise_on_warnings': True
-    }
-    connection = mysql.connector.connection.MySQLConnection(**config)
+    connection = mysql.connector.connection.MySQLConnection(user=username,
+                                                     password=password,
+                                                     host=host,
+                                                     database=db_name)
     return connection
