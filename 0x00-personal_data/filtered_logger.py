@@ -3,7 +3,7 @@
 import re
 import logging
 from typing import List
-from os import environ
+import os
 import mysql.connector
 from mysql.connector import Error
 
@@ -82,10 +82,10 @@ def get_logger() -> logging.Logger:
 
 def get_db() -> mysql.connector.connection.MySQLConnection:
     """ Returns a connector to a MySQL database """
-    username = environ.get("PERSONAL_DATA_DB_USERNAME", "root")
-    password = environ.get("PERSONAL_DATA_DB_PASSWORD", "")
-    host = environ.get("PERSONAL_DATA_DB_HOST", "localhost")
-    db_name = environ.get("PERSONAL_DATA_DB_NAME")
+    username = os.getenv('PERSONAL_DATA_DB_USERNAME', 'root')
+    password = os.getenv('PERSONAL_DATA_DB_PASSWORD', '')
+    host = os.getenv('PERSONAL_DATA_DB_HOST', 'localhost')
+    db_name = os.getenv('PERSONAL_DATA_DB_NAME')
 
     connection = mysql.connector.connection.MySQLConnection(
         user=username,
@@ -114,3 +114,7 @@ def main():
 
     cursor.close()
     db.close()
+
+
+if __name__ == '__main__':
+    main()
