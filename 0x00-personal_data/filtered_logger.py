@@ -81,6 +81,7 @@ def get_logger() -> logging.Logger:
 
 
 def get_db():
+    """ Returns a connector to a MySQL database """
     db_user = os.getenv('PERSONAL_DATA_DB_USER', 'root')
     db_password = os.getenv('PERSONAL_DATA_DB_PASSWORD', '')
     db_host = os.getenv('PERSONAL_DATA_DB_HOST', 'localhost')
@@ -93,10 +94,5 @@ def get_db():
         'database': db_name,
         'raise_on_warnings': True
     }
-    try:
-        connection = mysql.connector.connect(**config)
-        return connection
-
-    except mysql.connector.Error as e:
-        print(f"Error connecting to MySQL database: {e}")
-        return None
+    connection = mysql.connector.connection.MySQLConnection(**config)
+    return connection
