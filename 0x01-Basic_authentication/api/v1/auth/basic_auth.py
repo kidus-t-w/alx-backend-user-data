@@ -75,9 +75,7 @@ class BasicAuth(Auth):
         """
         if type(decoded_base64_authorization_header) == str:
             if ":" in decoded_base64_authorization_header:
-                credentials = decoded_base64_authorization_header.split(":")
+                credentials = decoded_base64_authorization_header.split(":", 1)
                 value = (credentials[0], credentials[1])
                 return value
-            return None
-
-        return None
+        return None, None
