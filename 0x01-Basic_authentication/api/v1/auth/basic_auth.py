@@ -120,7 +120,9 @@ class BasicAuth(Auth):
             provided credentials, or None if the credentials are invalid.
         """
         authentication_header = self.authorization_header(request)
-        b64_auth_token = self.extract_base64_authorization_header(authentication_header)
-        authentication_token = self.decode_base64_authorization_header(b64_auth_token)
+        b64_auth_token = self.extract_base64_authorization_header(
+            authentication_header)
+        authentication_token = self.decode_base64_authorization_header(
+            b64_auth_token)
         credentials = self.extract_user_credentials(authentication_token)
         return self.user_object_from_credentials(*credentials)
