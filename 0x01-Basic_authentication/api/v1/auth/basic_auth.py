@@ -5,6 +5,7 @@ import base64
 import binascii
 from api.v1.auth.auth import Auth
 from typing import Tuple
+from models.user import User
 
 
 class BasicAuth(Auth):
@@ -79,3 +80,47 @@ class BasicAuth(Auth):
                 value = (credentials[0], credentials[1])
                 return value
         return None, None
+
+    def user_object_from_credentials(
+            self,
+            user_email: str,
+            user_pwd: str) -> TypeVar('User'):
+        """
+        Get user Object based on user's email and password
+
+        Parameters:
+            user_email (str): The email of the user.
+            user_pwd (str): The password of the user.
+
+        Returns:
+            User
+        """
+        if isinstance(user_email, str) and isinstance(user_pwd, str):
+            try:
+                users = User.search({'email': user_email})
+            except Exception:
+                return None
+            if len(users) <= 0:
+                return None
+            if users[0].is_valid_password(user_pwd):
+                return users[0]
+        return None
+
+    def current_user(self, request=None) -> TypeVar('User'):
+        """
+        Get the current user based on the
+        authorization header in the request.
+
+        Args:
+            request (flask.Request, optional): The request object.
+            Defaults to None.
+
+        Returns:
+            TypeVar('User'): The user object corresponding to the
+            provided credentials, or None if the credentials are invalid.
+        """
+        authentication_header = self.authorization_header(request)
+        b64_auth_token = self.extract_base64_authorization_header(authentication_header)
+        authentication_token = self.decode_base64_authorization_header(b64_auth_token)
+        credentials = self.extract_user_credentials(authentication_token)
+        return self.user_object_from_credentials(*credentials)
