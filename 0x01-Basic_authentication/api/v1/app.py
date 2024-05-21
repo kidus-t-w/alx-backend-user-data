@@ -24,6 +24,7 @@ if auth:
 if os.getenv('AUTH_TYPE') == BasicAuth:
     auth = BasicAuth()
 
+
 @app.before_request
 def before_request():
     """
