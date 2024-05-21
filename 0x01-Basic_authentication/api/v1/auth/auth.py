@@ -7,6 +7,7 @@ from typing import List, TypeVar
 
 
 class Auth():
+    """Basic Authentication"""
     def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
         """
         Check if authentication is required for a given path.
