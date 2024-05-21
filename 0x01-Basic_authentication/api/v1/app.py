@@ -23,6 +23,9 @@ if auth:
 
 @app.before_request
 def before_request():
+    """
+    Checks if the route requested route is secure
+    """
     excluded_path = ['/api/v1/status/',
                      '/api/v1/unauthorized/',
                      '/api/v1/forbidden/']
