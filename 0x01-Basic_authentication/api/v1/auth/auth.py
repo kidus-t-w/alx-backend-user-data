@@ -5,10 +5,51 @@ from typing import List, TypeVar
 
 class Auth():
     def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
-        return False
+        """
+        Check if authentication is required for a given path.
+
+        Args:
+            path (str): The path for which authentication is being checked.
+            excluded_paths (List[str]): A list of paths that are excluded
+            from authentication.
+
+        Returns:
+            bool: True if authentication is required, False otherwise.
+        """
+        if path in excluded_paths:
+            return False
+        return True
 
     def authorization_header(self, request=None) -> str:
-        return None
+        """
+        Retrieves the authorization header from the request.
+
+        Args:
+            request (flask.Request, optional): The request object.
+            Defaults to None.
+
+        Returns:
+            str: The authorization header value,
+            or None if the header is not present.
+        """
+        if request is None:
+            return None
+        else:
+            return request
 
     def current_user(self, request=None) -> TypeVar('User'):
-        return None
+        """
+        Retrieves the current user from the request.
+
+        Args:
+            request (flask.Request, optional): The request object.
+            Defaults to None.
+
+        Returns:
+            TypeVar('User'): The current user object, or None if
+            the user is not authenticated.
+        """
+        if request is None:
+            return None
+        else:
+            return request
