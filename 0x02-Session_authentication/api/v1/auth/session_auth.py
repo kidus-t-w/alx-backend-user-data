@@ -10,13 +10,14 @@ class SessionAuth(Auth):
     """
     Session Authentication
     """
+
     user_id_by_session_id = {}
 
     def create_session(self, user_id: str = None) -> str:
         """
         Creates session
         """
-        if user_id is None or type(user_id) != str:
+        if user_id is None or not isinstance(user_id, str):
             return None
         self.session_id = uuid.uuid4()
         self.user_id_by_session_id[self.session_id] = user_id
@@ -34,7 +35,7 @@ class SessionAuth(Auth):
             str: The user ID associated with the session ID,
             or None if the session ID is invalid or not found.
         """
-        if session_id is None or type(session_id) != str:
+        if session_id is None:
             return None
-        value = self.user_id_by_session_id.get("session_id")
-        return value
+        user = self.user_id_by_session_id.get(session_id)
+        return user
