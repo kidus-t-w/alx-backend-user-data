@@ -4,6 +4,7 @@ Basic Authentication
 """
 from flask import request
 from typing import List, TypeVar
+import os
 
 
 class Auth():
@@ -62,3 +63,20 @@ class Auth():
         """
         if request is None:
             return None
+
+    def session_cookie(self, request=None):
+        """
+        Retrieves the session cookie value from the request.
+
+        Args:
+            request (flask.Request, optional): The request object.
+            Defaults to None.
+
+        Returns:
+            str: The value of the session cookie,
+            or None if the cookie is not present.
+        """
+        if request is None:
+            return None
+        cookie_name = os.getenv('SESSION_NAME')
+        return request.cookies.get(cookie_name)
