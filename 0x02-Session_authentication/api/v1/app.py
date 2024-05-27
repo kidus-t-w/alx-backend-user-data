@@ -34,19 +34,22 @@ def before_request():
     """
     Checks if the route requested route is secure
     """
-    excluded_path = ['/api/v1/status/',
-                     '/api/v1/unauthorized/',
-                     '/api/v1/forbidden/',
-                     '/api/v1/auth_session/login/']
-    if auth and auth.require_auth(request.path, excluded_path):
-        if auth.authorization_header(request) is None \
-                and auth.session_cookie(request) is None:
-            abort(401)
-        if auth.authorization_header(request) is None:
-            abort(401)
-        request.current_user = auth.current_user(request)
-        if auth.current_user(request) is None:
-            abort(403)
+    excluded_paths = ['/api/v1/status/', '/api/v1/unauthorized/',
+                      '/api/v1/forbidden/', '/api/v1/auth_session/login/']
+    if auth is None:
+        return
+    if auth.require_auth(request.path, excluded_paths) is False:
+        return
+    if auth.authorization_header(request) is None \
+            and auth.session_cookie(request) is None:
+        abort(401)
+
+    current_user = auth.current_user(request)
+    print(current_user)
+    if current_user is None:
+        abort(403)
+
+    request.current_user = current_user
 
 
 @app.errorhandler(404)
