@@ -6,9 +6,6 @@ from typing import TypeVar
 from api.v1.auth.auth import Auth
 import uuid
 from models.user import User
-from flask import request
-from api.v1.app import app
-
 
 class SessionAuth(Auth):
     """
