@@ -40,8 +40,9 @@ def auth_session():
 
     return resp
 
+
 @app_views.route('/auth_session/logout', methods=['DELETE'],
-                strict_slashes=False)
+                 strict_slashes=False)
 def handle_logout():
     """
     Handle user logout
