@@ -1,48 +1,55 @@
 #!/usr/bin/env python3
-""" Module of Session authentication views
 """
-from api.v1.views import app_views
-from flask import abort, jsonify, request
+Session Authentication
+"""
+from typing import TypeVar
+from api.v1.auth.auth import Auth
+import uuid
 from models.user import User
-from os import getenv
+from flask import request
+from api.v1.app import app
 
 
-@app_views.route('/auth_session/login', methods=['POST'], strict_slashes=False)
-def login():
-    """ POST /auth_session/login
-    Return
-        - Logged in user
+class SessionAuth(Auth):
     """
-    email = request.form.get('email')
+    Session Authentication
+    """
 
-    if not email:
-        return jsonify({"error": "email missing"}), 400
+    user_id_by_session_id = {}
 
-    password = request.form.get('password')
+    def create_session(self, user_id: str = None) -> str:
+        """
+        Creates session
+        """
+        if user_id is None or not isinstance(user_id, str):
+            return None
+        self.session_id = str(uuid.uuid4())
+        self.user_id_by_session_id[self.session_id] = user_id
+        return self.session_id
 
-    if not password:
-        return jsonify({"error": "password missing"}), 400
+    def user_id_for_session_id(self, session_id: str = None) -> str:
+        """
+        Retrieves the user ID associated with the given session ID.
 
-    try:
-        found_users = User.search({'email': email})
-    except Exception:
-        return jsonify({"error": "no user found for this email"}), 404
+        Parameters:
+            session_id (str, optional): The session ID to retrieve the
+            user ID for. Defaults to None.
 
-    if not found_users:
-        return jsonify({"error": "no user found for this email"}), 404
+        Returns:
+            str: The user ID associated with the session ID,
+            or None if the session ID is invalid or not found.
+        """
+        if session_id is None or not isinstance(session_id, str):
+            return None
 
-    for user in found_users:
-        if not user.is_valid_password(password):
-            return jsonify({"error": "wrong password"}), 401
+        return self.user_id_by_session_id.get(session_id)
 
-    from api.v1.app import auth
-
-    user = found_users[0]
-    session_id = auth.create_session(user.id)
-
-    SESSION_NAME = getenv("SESSION_NAME")
-
-    response = jsonify(user.to_json())
-    response.set_cookie(SESSION_NAME, session_id)
-
-    return response
+    def current_user(self, request=None) -> TypeVar('User'):
+        """
+        Returns user instance using cookie
+        """
+        session_id = self.session_cookie(request)
+        if session_id is None:
+            return None
+        user_id = self.user_id_for_session_id(session_id)
+        return User.get(user_id)
