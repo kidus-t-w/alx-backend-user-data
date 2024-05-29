@@ -40,16 +40,8 @@ class DB:
         Returns:
             User: The created User object.
         """
-        # Create a new User object
         new_user = User(email=email, hashed_password=hashed_password)
-
-        # Add the new User object to the session
         self._session.add(new_user)
-
-        # Commit the session to save the new user to the database
         self._session.commit()
-
-        # Refresh the new User object to get its id
-        self._session.refresh(new_user)
 
         return new_user
