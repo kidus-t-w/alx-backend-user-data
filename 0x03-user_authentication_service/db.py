@@ -30,23 +30,26 @@ class DB:
             self.__session = DBSession()
         return self.__session
 
-    def add_user(self, email, hashed_password):
-        """
-        Adds new user to the database
-        """
-        # Get the session
-        db = self._session
+    def add_user(self, email: str, hashed_password: str) -> User:
+        """Add a new user to the database and return the User object.
 
-        # Create a new user
+        Args:
+            email (str): The email of the new user.
+            hashed_password (str): The hashed password of the new user.
+
+        Returns:
+            User: The created User object.
+        """
+        # Create a new User object
         new_user = User(email=email, hashed_password=hashed_password)
 
-        # Add the new user to the session
-        db.add(new_user)
+        # Add the new User object to the session
+        self._session.add(new_user)
 
-        # Commit the session to save the new user
-        db.commit()
+        # Commit the session to save the new user to the database
+        self._session.commit()
 
-        # Close the session
-        db.close()
+        # Refresh the new User object to get its id
+        self._session.refresh(new_user)
 
         return new_user
