@@ -14,6 +14,7 @@ def _hash_password(password: str) -> str:
     hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
     return hashed
 
+
 class Auth:
     """Auth class to interact with the authentication database.
     """
