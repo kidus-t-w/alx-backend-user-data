@@ -59,6 +59,15 @@ class DB:
         return new_user
 
     def find_user_by(self, **kwargs):
+        """
+        Finds and returns the first row found int he user table
+
+        Args:
+            kwargs (dir): Dictionary representing the user
+
+        Returns:
+            User: returns the first row found in the user table
+        """
         try:
             user = self._session.query(User).filter_by(**kwargs).one()
         except NoResultFound:
