@@ -89,6 +89,9 @@ class DB:
         Args:
             user_id (int): User id to be updated
             kwargs (dict): values to be updated in user
+
+        Returns:
+            None
         """
         user = self.find_user_by(id=user_id)
         if user is None:
