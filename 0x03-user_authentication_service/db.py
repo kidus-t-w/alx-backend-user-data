@@ -4,7 +4,7 @@
 import logging
 from typing import Dict
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, tuple_
 from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -68,21 +68,16 @@ class DB:
         Returns:
             User: First row found in the `users` table.
         """
-        if not kwargs and self.valid_query_args(**kwargs):
-            raise InvalidRequestError
-
-        user = self._session.query(User).filter_by(**kwargs).first()
-
-        if not user:
-            raise NoResultFound
-        else:
-            return user
-
-    def valid_query_args(self, **kwargs):
-        """Get users table columns
-        """
-        columns = User.__table__.columns.keys()
-        for key in kwargs.keys():
-            if key not in columns:
-                return False
-        return True
+        fields, values = [], []
+        for key, value in kwargs.items():
+            if hasattr(User, key):
+                fields.append(getattr(User, key))
+                values.append(value)
+            else:
+                raise InvalidRequestError()
+        result = self._session.query(User).filter(
+            tuple_(*fields).in_([tuple(values)])
+        ).first()
+        if result is None:
+            raise NoResultFound()
+        return result
