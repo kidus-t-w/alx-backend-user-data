@@ -82,16 +82,8 @@ class DB:
             raise NoResultFound()
         return result
 
-    def update_user(self, user_id: int, **kwargs: Dict[str, str]) -> None:
-        """
-        Updates user on given user_id.
-
-        Args:
-            user_id (int): User id to be updated
-            kwargs (dict): values to be updated in user
-
-        Returns:
-            None
+    def update_user(self, user_id: int, **kwargs) -> None:
+        """Updates a user based on a given id.
         """
         user = self.find_user_by(id=user_id)
         if user is None:
