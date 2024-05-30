@@ -68,7 +68,7 @@ class DB:
         Returns:
             User: First row found in the `users` table.
         """
-        if not kwargs:
+        if not kwargs or not self.valid_query_args(**kwargs):
             raise InvalidRequestError
 
         user = self._session.query(User).filter_by(**kwargs).first()
@@ -77,3 +77,12 @@ class DB:
             raise NoResultFound
         else:
             return user
+
+    def valid_query_args(self, **kwargs):
+        """Get users table columns
+        """
+        columns = User.__table__.columns.keys()
+        for key in kwargs.keys():
+            if key not in columns:
+                return False
+        return True
