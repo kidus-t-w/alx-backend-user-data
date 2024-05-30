@@ -58,7 +58,7 @@ class DB:
             raise
         return new_user
 
-    def find_user_by(self, **kwargs):
+    def find_user_by(self, **kwargs: Dict[str, str]) -> User:
         """
         Finds and returns the first row found int he user table
 
