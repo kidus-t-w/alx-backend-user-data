@@ -4,7 +4,8 @@ from auth import Auth
 from flask import (Flask,
                    jsonify,
                    request,
-                   abort, g)
+                   abort,
+                   redirect)
 
 app = Flask(__name__)
 AUTH = Auth()
@@ -46,6 +47,16 @@ def login():
     response.set_cookie("session_id", session_id)
 
     return response
+
+
+@app.route("/logout", methods=['DELETE'], strict_slashes=False)
+def logout():
+    session_id = request.cookies.get('session_id')
+    user = Auth.get_user_from_session_id(session_id)
+    if not user:
+        abort(403)
+    Auth.destroy_session(user.id)
+    redirect('/')
 
 
 if __name__ == "__main__":
