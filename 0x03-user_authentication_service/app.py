@@ -10,29 +10,27 @@ app = Flask(__name__)
 AUTH = Auth()
 
 
-@app.route('/', methods=['GET'])
-def hello_world() -> str:
-    """ Base route for authentication service API """
-    msg = {"message": "Bienvenue"}
-    return jsonify(msg)
+@app.route("/", methods=["GET"], strict_slashes=False)
+def index() -> str:
+    """GET /
+    Return:
+        - The home page's payload.
+    """
+    return jsonify({"message": "Bienvenue"})
 
 
-@app.route('/users', methods=['POST'])
-def register_user() -> str:
-    """Registers a new user if it does not exist before"""
+@app.route("/users", methods=["POST"], strict_slashes=False)
+def users() -> str:
+    """POST /users
+    Return:
+        - The account creation payload.
+    """
+    email, password = request.form.get("email"), request.form.get("password")
     try:
-        email = request.form['email']
-        password = request.form['password']
-    except KeyError:
-        abort(400)
-
-    try:
-        user = AUTH.register_user(email, password)
+        AUTH.register_user(email, password)
     except ValueError:
         return jsonify({"message": "email already registered"}), 400
-
-    msg = {"email": email, "message": "user created"}
-    return jsonify(msg)
+    return jsonify({"email": email, "message": "user created"})
 
 
 if __name__ == "__main__":
