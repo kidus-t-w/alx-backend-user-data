@@ -38,8 +38,8 @@ def login():
     """
     POST /session
     """
-    email, password = request.form.get("email", "password")
-    if not AUTH.create_session(email):
+    email, password = request.form.get("email"), request.form.get("password")
+    if not AUTH.valid_login(email, password):
         abort(401)
     session_id = AUTH.create_session(email)
     response = jsonify({"email": email, "message": "logged in"})
