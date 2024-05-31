@@ -2,6 +2,7 @@
 """DB module
 """
 import logging
+import bcrypt
 from typing import Dict
 
 from sqlalchemy import create_engine, tuple_
@@ -49,34 +50,27 @@ class DB:
             User: A User objecting the new user
         """
         new_user = User(email=email, hashed_password=hashed_password)
-        try:
-            self._session.add(new_user)
-            self._session.commit()
-        except Exception as e:
-            print(f"Error adding user to database: {e}")
-            self._session.rollback()
-            raise
+        self._session.add(new_user)
+        self._session.commit()
         return new_user
 
     def find_user_by(self, **kwargs) -> User:
-        """Find a user by specified attributes.
-
-        Raises:
-            error: NoResultFound: When no results are found.
-            error: InvalidRequestError: When invalid query arguments are passed
-
-        Returns:
-            User: First row found in the `users` table.
+        """ Finds user by key word args
+        Return: First row found in the users table as filtered by kwargs
         """
-        column = User.__table__.columns
-        if kwargs is None:
+        if not kwargs:
             raise InvalidRequestError
-        for key in kwargs:
-            if key not in column:
+
+        column_names = User.__table__.columns.keys()
+        for key in kwargs.keys():
+            if key not in column_names:
                 raise InvalidRequestError
-        user = self._session.query(User).filter_by(**kwargs).one()
+
+        user = self._session.query(User).filter_by(**kwargs).first()
+
         if user is None:
             raise NoResultFound
+
         return user
 
     def update_user(self, user_id: int, **kwargs) -> None:
