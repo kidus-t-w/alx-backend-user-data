@@ -22,7 +22,7 @@ def _generate_uuid() -> str:
     """
     Generate uuid
     """
-    user_id = uuid.UUID()
+    user_id = str(uuid.uuid4())
     return user_id
 
 
