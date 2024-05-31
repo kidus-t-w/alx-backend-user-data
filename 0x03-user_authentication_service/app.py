@@ -35,7 +35,7 @@ def users() -> str:
 
 
 @app.route("/sessions", methods=["POST"], strict_slashes=False)
-def login():
+def login() -> str:
     """
     POST /session
     """
@@ -50,16 +50,16 @@ def login():
 
 
 @app.route("/logout", methods=['DELETE'], strict_slashes=False)
-def logout():
+def logout() -> str:
     """
     DELETE /logout route
     """
-    session_id = request.cookies.get('session_id')
-    user = Auth.get_user_from_session_id(session_id)
+    session_id = request.cookies.get("session_id")
+    user = AUTH.get_user_from_session_id(session_id)
     if user is None:
         abort(403)
-    Auth.destroy_session(user.id)
-    return redirect('/')
+    AUTH.destroy_session(user.id)
+    return redirect("/")
 
 
 if __name__ == "__main__":
