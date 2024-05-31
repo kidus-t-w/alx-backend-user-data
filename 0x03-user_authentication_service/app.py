@@ -4,7 +4,7 @@ from auth import Auth
 from flask import (Flask,
                    jsonify,
                    request,
-                   abort)
+                   abort, g)
 
 app = Flask(__name__)
 AUTH = Auth()
@@ -31,6 +31,18 @@ def users() -> str:
     except ValueError:
         return jsonify({"message": "email already registered"}), 400
     return jsonify({"email": email, "message": "user created"})
+
+
+@app.route("/sessions", methods=["POST"], strict_slashes=False)
+def login():
+    email, password = request.form.get("email", "password")
+    if email is None or password is None or AUTH.create_session(email) is None:
+        abort(401)
+    session_id = AUTH.create_session(email)
+    response = jsonify({"email": email, "message": "logged in"})
+    response.set_cookie("session_id", session_id)
+
+    return response
 
 
 if __name__ == "__main__":
