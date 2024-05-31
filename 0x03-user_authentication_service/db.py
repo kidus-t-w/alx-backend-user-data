@@ -58,7 +58,7 @@ class DB:
             raise
         return new_user
 
-    def find_user_by(self, **kwargs: Dict[str, str]) -> User:
+    def find_user_by(self, **kwargs) -> User:
         """Find a user by specified attributes.
 
         Raises:
