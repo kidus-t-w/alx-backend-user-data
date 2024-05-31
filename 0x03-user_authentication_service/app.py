@@ -35,6 +35,9 @@ def users() -> str:
 
 @app.route("/sessions", methods=["POST"], strict_slashes=False)
 def login():
+    """
+    POST /session
+    """
     email, password = request.form.get("email", "password")
     if email is None or password is None or AUTH.create_session(email) is None:
         abort(401)
